@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f7;
             min-height: 100vh;
             padding: 20px;
         }
@@ -25,18 +25,21 @@
 
         .header {
             text-align: center;
-            color: white;
+            color: #1d1d1f;
             margin-bottom: 30px;
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 3em;
             margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
+            font-size: 1.3em;
+            color: #6e6e73;
+            font-weight: 400;
         }
 
         .admin-link {
@@ -45,24 +48,24 @@
         }
 
         .admin-link a {
-            color: white;
+            color: #0071e3;
             text-decoration: none;
             padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: transparent;
             border-radius: 20px;
-            font-size: 0.9em;
-            transition: background 0.3s;
+            font-size: 1em;
+            transition: opacity 0.3s;
         }
 
         .admin-link a:hover {
-            background: rgba(255, 255, 255, 0.3);
+            opacity: 0.7;
         }
 
         .card {
             background: white;
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             margin-bottom: 20px;
         }
 
@@ -90,35 +93,36 @@
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #0071e3;
         }
 
         button {
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 24px;
+            background: #0071e3;
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 980px;
             font-size: 1em;
+            font-weight: 400;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: background 0.3s;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: #0077ed;
         }
 
         button:active {
-            transform: translateY(0);
+            background: #006edb;
         }
 
         .weather-info {
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
+            background: #fbfbfd;
+            border-radius: 18px;
             margin-bottom: 30px;
+            border: 1px solid #d2d2d7;
         }
 
         .weather-info h2 {
