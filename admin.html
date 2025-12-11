@@ -441,6 +441,11 @@
 
         <div class="nav-buttons">
             <a href="index.html">메인 페이지로 돌아가기</a>
+            <button onclick="exportData()" style="margin-left: 10px; background: #28a745;">📤 데이터 내보내기</button>
+            <label for="importFile" style="margin-left: 10px; display: inline-block; padding: 10px 20px; background: #007bff; color: white; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                📥 데이터 가져오기
+            </label>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
         </div>
 
         <div id="successMessage" class="success-message">
@@ -915,6 +920,86 @@
         // 착샷 목록 로드
         async function loadOutfits() {
             await filterOutfits();
+        }
+
+        // 데이터 내보내기
+        async function exportData() {
+            try {
+                const allOutfits = await getAllOutfitsFromDB();
+
+                if (allOutfits.length === 0) {
+                    alert('내보낼 데이터가 없습니다.');
+                    return;
+                }
+
+                // JSON으로 변환
+                const dataStr = JSON.stringify(allOutfits, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+                // 다운로드 링크 생성
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `outfit-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                alert(`✅ ${allOutfits.length}개의 착샷 데이터를 내보냈습니다!`);
+            } catch (error) {
+                console.error('내보내기 오류:', error);
+                alert('데이터 내보내기 중 오류가 발생했습니다.');
+            }
+        }
+
+        // 데이터 가져오기
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                if (!Array.isArray(data)) {
+                    alert('올바르지 않은 데이터 형식입니다.');
+                    return;
+                }
+
+                // 확인 메시지
+                const confirm = window.confirm(
+                    `${data.length}개의 착샷 데이터를 가져옵니다.\n` +
+                    '기존 데이터는 유지되고, 새로운 데이터가 추가됩니다.\n' +
+                    '계속하시겠습니까?'
+                );
+
+                if (!confirm) return;
+
+                // IndexedDB에 저장
+                let successCount = 0;
+                for (const outfit of data) {
+                    try {
+                        // ID가 중복되면 새 ID 생성
+                        outfit.id = Date.now() + successCount;
+                        await saveOutfitToDB(outfit);
+                        successCount++;
+                    } catch (error) {
+                        console.error('착샷 저장 오류:', error);
+                    }
+                }
+
+                // 목록 새로고침
+                await loadOutfits();
+
+                alert(`✅ ${successCount}개의 착샷을 성공적으로 가져왔습니다!`);
+
+                // 파일 입력 초기화
+                event.target.value = '';
+            } catch (error) {
+                console.error('가져오기 오류:', error);
+                alert('데이터 가져오기 중 오류가 발생했습니다.\n올바른 JSON 파일인지 확인해주세요.');
+            }
         }
 
         // 페이지 로드 시 초기화
