@@ -690,6 +690,47 @@
             });
         }
 
+        // IndexedDB에 착샷 저장
+        async function saveOutfitToDB(outfit) {
+            if (!db) await initDB();
+
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readwrite');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.add(outfit);
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // 기본 데이터 로드 (처음 접속 시 자동으로 outfits.json 로드)
+        async function loadInitialDataIfNeeded() {
+            try {
+                const allOutfits = await getAllOutfitsFromDB();
+
+                if (!allOutfits || allOutfits.length === 0) {
+                    console.log('기본 착샷 데이터 로드 중...');
+
+                    const response = await fetch('outfits.json');
+                    const outfits = await response.json();
+
+                    // IndexedDB에 저장
+                    for (const outfit of outfits) {
+                        try {
+                            await saveOutfitToDB(outfit);
+                        } catch (error) {
+                            console.error('착샷 저장 오류:', error);
+                        }
+                    }
+
+                    console.log(`✅ ${outfits.length}개의 기본 착샷 데이터 로드 완료!`);
+                }
+            } catch (error) {
+                console.error('기본 데이터 로드 실패:', error);
+            }
+        }
+
         // IndexedDB에서 착샷 데이터 가져오기
         async function getOutfitsFromStorage() {
             try {
@@ -1181,6 +1222,7 @@
         // 페이지 로드 시 초기화 및 기본 날씨 표시
         window.addEventListener('load', async () => {
             await initDB();
+            await loadInitialDataIfNeeded();  // 기본 데이터 자동 로드
             getWeather();
         });
 
