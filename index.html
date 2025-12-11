@@ -82,16 +82,18 @@
             flex-wrap: wrap;
         }
 
-        input[type="text"] {
+        input[type="text"], select {
             padding: 12px 20px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 1em;
             width: 250px;
             transition: border 0.3s;
+            background: white;
+            cursor: pointer;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, select:focus {
             outline: none;
             border-color: #0071e3;
         }
@@ -476,7 +478,15 @@
         <div class="card">
             <div class="location-section">
                 <div class="location-input">
-                    <input type="text" id="cityInput" placeholder="도시 이름 (예: Seoul)" value="Seoul">
+                    <select id="cityInput">
+                        <option value="Seoul">서울</option>
+                        <option value="Busan">부산</option>
+                        <option value="Incheon">인천</option>
+                        <option value="Daegu">대구</option>
+                        <option value="Daejeon">대전</option>
+                        <option value="Gwangju">광주</option>
+                        <option value="Ulsan">울산</option>
+                    </select>
                     <button onclick="getWeather()">날씨 확인</button>
                     <button onclick="getCurrentLocation()">내 위치</button>
                 </div>
