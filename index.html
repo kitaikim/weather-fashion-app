@@ -362,10 +362,16 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .outfit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+        .outfit-carousel-container {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .outfit-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
         }
 
         .outfit-card {
@@ -376,6 +382,70 @@
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
+            display: none;
+        }
+
+        .outfit-card.active {
+            display: block;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            transition: all 0.3s;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-button:hover:not(:disabled) {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .carousel-button.prev {
+            left: -55px;
+        }
+
+        .carousel-button.next {
+            right: -55px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .carousel-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-indicator.active {
+            background: white;
+            width: 30px;
+            border-radius: 5px;
         }
 
         .outfit-card:hover {
@@ -1302,56 +1372,125 @@
                 // 착샷 추천
                 const outfits = await getOutfitsByWeather(slot.temp, slot.weatherMain);
 
-                const outfitGrid = document.createElement('div');
-                outfitGrid.className = 'outfit-grid';
-
                 if (outfits.length === 0) {
-                    outfitGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.7);">
-                            <p>이 날씨에 맞는 착샷이 아직 없습니다.</p>
-                            <p><a href="admin.html" style="color: #a8d5ff;">관리자 페이지</a>에서 추가해주세요.</p>
-                        </div>
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.style.cssText = 'text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.7);';
+                    emptyMsg.innerHTML = `
+                        <p>이 날씨에 맞는 착샷이 아직 없습니다.</p>
+                        <p><a href="admin.html" style="color: #a8d5ff;">관리자 페이지</a>에서 추가해주세요.</p>
                     `;
+                    section.appendChild(emptyMsg);
                 } else {
-                    // 각 시간대마다 다른 착샷을 보여주기 위해 섞기
-                    const shuffledOutfits = shuffleArray(outfits);
-
-                    // 각 시간대별로 최대 3개 착샷만 표시
-                    shuffledOutfits.slice(0, 3).forEach(outfit => {
-                        const card = document.createElement('div');
-                        card.className = 'outfit-card';
-
-                        // 평점 배지 HTML
-                        const ratingBadge = outfit.rating && outfit.rating > 0
-                            ? `<div class="rating-badge"><span class="star-icon">★</span> ${outfit.rating}/5</div>`
-                            : '';
-
-                        // 착용 횟수 표시
-                        const wearCount = outfit.wearHistory && outfit.wearHistory.length > 0
-                            ? `<p style="font-size: 0.85em; color: #999; margin-top: 5px;">👔 ${outfit.wearHistory.length}회 착용</p>`
-                            : '';
-
-                        card.innerHTML = `
-                            <img src="${outfit.image}" alt="${outfit.title}" class="outfit-image">
-                            <div class="outfit-info">
-                                <h3>${outfit.title}</h3>
-                                <p>${outfit.description}</p>
-                                <p><strong>${outfit.temp}</strong></p>
-                                ${ratingBadge}
-                                ${wearCount}
-                            </div>
-                        `;
-
-                        // 카드 클릭 시 모달 열기
-                        card.addEventListener('click', () => openDetailModal(outfit));
-
-                        outfitGrid.appendChild(card);
-                    });
+                    // 캐러셀 생성
+                    const carouselContainer = createOutfitCarousel(outfits, slot);
+                    section.appendChild(carouselContainer);
                 }
 
-                section.appendChild(outfitGrid);
                 container.appendChild(section);
             }
+        }
+
+        // 착샷 캐러셀 생성
+        function createOutfitCarousel(outfits, slot) {
+            const container = document.createElement('div');
+            container.className = 'outfit-carousel-container';
+
+            // 착샷을 섞어서 최대 3개만 사용
+            const shuffledOutfits = shuffleArray(outfits).slice(0, 3);
+            let currentIndex = 0;
+
+            // 캐러셀 래퍼
+            const carousel = document.createElement('div');
+            carousel.className = 'outfit-carousel';
+
+            // 이전 버튼
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'carousel-button prev';
+            prevBtn.innerHTML = '‹';
+            prevBtn.onclick = () => {
+                currentIndex = Math.max(0, currentIndex - 1);
+                updateCarousel();
+            };
+
+            // 다음 버튼
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'carousel-button next';
+            nextBtn.innerHTML = '›';
+            nextBtn.onclick = () => {
+                currentIndex = Math.min(shuffledOutfits.length - 1, currentIndex + 1);
+                updateCarousel();
+            };
+
+            // 착샷 카드들 생성
+            shuffledOutfits.forEach((outfit, index) => {
+                const card = document.createElement('div');
+                card.className = `outfit-card ${index === 0 ? 'active' : ''}`;
+
+                const ratingBadge = outfit.rating && outfit.rating > 0
+                    ? `<div class="rating-badge"><span class="star-icon">★</span> ${outfit.rating}/5</div>`
+                    : '';
+
+                const wearCount = outfit.wearHistory && outfit.wearHistory.length > 0
+                    ? `<p style="font-size: 0.85em; color: #999; margin-top: 5px;">👔 ${outfit.wearHistory.length}회 착용</p>`
+                    : '';
+
+                card.innerHTML = `
+                    <img src="${outfit.image}" alt="${outfit.title}" class="outfit-image">
+                    <div class="outfit-info">
+                        <h3>${outfit.title}</h3>
+                        <p>${outfit.description}</p>
+                        <p><strong>${outfit.temp}</strong></p>
+                        ${ratingBadge}
+                        ${wearCount}
+                    </div>
+                `;
+
+                card.addEventListener('click', () => openDetailModal(outfit));
+                carousel.appendChild(card);
+            });
+
+            // 인디케이터
+            const indicators = document.createElement('div');
+            indicators.className = 'carousel-indicators';
+
+            shuffledOutfits.forEach((_, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
+                indicator.onclick = () => {
+                    currentIndex = index;
+                    updateCarousel();
+                };
+                indicators.appendChild(indicator);
+            });
+
+            // 캐러셀 업데이트 함수
+            function updateCarousel() {
+                // 카드 업데이트
+                const cards = carousel.querySelectorAll('.outfit-card');
+                cards.forEach((card, index) => {
+                    card.classList.toggle('active', index === currentIndex);
+                });
+
+                // 인디케이터 업데이트
+                const indicatorDots = indicators.querySelectorAll('.carousel-indicator');
+                indicatorDots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentIndex);
+                });
+
+                // 버튼 활성화/비활성화
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === shuffledOutfits.length - 1;
+            }
+
+            container.appendChild(prevBtn);
+            container.appendChild(carousel);
+            container.appendChild(nextBtn);
+            container.appendChild(indicators);
+
+            // 초기 상태 설정
+            updateCarousel();
+
+            return container;
         }
 
         // 배열 섞기 함수 (Fisher-Yates shuffle)
