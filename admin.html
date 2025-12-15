@@ -480,18 +480,25 @@
 
                 <div class="image-upload-options">
                     <div class="upload-option">
-                        <h3>이미지 파일 업로드</h3>
-                        <div class="file-input-wrapper">
-                            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
-                            <label for="fileInput" class="file-input-label">파일 선택</label>
-                        </div>
-                        <div class="preview-area" id="filePreview"></div>
+                        <h3>⚠️ 이미지 URL 입력 (권장)</h3>
+                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="handleUrlInput()">
+                        <div class="preview-area" id="urlPreview"></div>
+                        <p style="font-size: 0.9em; color: #666; margin-top: 8px;">
+                            💡 이미지 URL을 사용하면 CORS 문제 없이 바로 저장됩니다.<br>
+                            예: <code>https://via.placeholder.com/400x600</code>
+                        </p>
                     </div>
 
                     <div class="upload-option">
-                        <h3>이미지 URL 입력</h3>
-                        <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" oninput="handleUrlInput()">
-                        <div class="preview-area" id="urlPreview"></div>
+                        <h3>이미지 파일 업로드 (현재 사용 불가)</h3>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)" disabled>
+                            <label for="fileInput" class="file-input-label" style="opacity: 0.5; cursor: not-allowed;">파일 선택 (비활성화)</label>
+                        </div>
+                        <div class="preview-area" id="filePreview"></div>
+                        <p style="font-size: 0.9em; color: #999; margin-top: 8px;">
+                            ⚠️ Firebase Storage CORS 설정이 필요합니다. 당분간 이미지 URL을 사용해주세요.
+                        </p>
                     </div>
                 </div>
 
