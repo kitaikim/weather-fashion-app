@@ -13,9 +13,40 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-            background: #f5f5f7;
             min-height: 100vh;
             padding: 20px;
+            transition: background 1s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 동적 배경 그라데이션 */
+        body.weather-clear-day {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+
+        body.weather-clear-night {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        body.weather-clouds-day {
+            background: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
+        }
+
+        body.weather-clouds-night {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+        }
+
+        body.weather-rain {
+            background: linear-gradient(135deg, #373b44 0%, #4286f4 50%, #373b44 100%);
+        }
+
+        body.weather-snow {
+            background: linear-gradient(135deg, #e6dada 0%, #274046 100%);
+        }
+
+        body.weather-default {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .container {
@@ -25,21 +56,44 @@
 
         .header {
             text-align: center;
-            color: #1d1d1f;
+            color: white;
             margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease;
         }
 
         .header h1 {
-            font-size: 3em;
+            font-size: 3.5em;
             margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: -0.02em;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
-            font-size: 1.3em;
-            color: #6e6e73;
+            font-size: 1.4em;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 400;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .admin-link {
@@ -48,25 +102,33 @@
         }
 
         .admin-link a {
-            color: #0071e3;
+            color: white;
             text-decoration: none;
-            padding: 8px 20px;
-            background: transparent;
-            border-radius: 20px;
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
             font-size: 1em;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
+            display: inline-block;
         }
 
         .admin-link a:hover {
-            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
 
+        /* 글래스모피즘 카드 */
         .card {
-            background: white;
-            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
             padding: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            animation: fadeIn 0.6s ease;
         }
 
         .location-section {
@@ -80,56 +142,157 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        /* 선호도 설정 섹션 */
+        .preference-section {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .preference-label {
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .preference-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .preference-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        .preference-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .preference-btn.active {
+            background: rgba(255, 255, 255, 0.35);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         input[type="text"], select {
-            padding: 12px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 14px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
             font-size: 1em;
             width: 250px;
-            transition: border 0.3s;
-            background: white;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             cursor: pointer;
+            color: white;
+            font-weight: 500;
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        select option {
+            background: #667eea;
+            color: white;
         }
 
         input[type="text"]:focus, select:focus {
             outline: none;
-            border-color: #0071e3;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         button {
-            padding: 12px 24px;
-            background: #0071e3;
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.25);
             color: white;
-            border: none;
-            border-radius: 980px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
             font-size: 1em;
-            font-weight: 400;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
 
         button:hover {
-            background: #0077ed;
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         button:active {
-            background: #006edb;
+            transform: translateY(0);
         }
 
         .weather-info {
             text-align: center;
-            padding: 20px;
-            background: #fbfbfd;
-            border-radius: 18px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             margin-bottom: 30px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .weather-info h2 {
-            color: #333;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 시간대별 날씨 그리드 */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .time-slot {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .time-slot-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: white;
             margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .weather-details {
@@ -146,26 +309,57 @@
         }
 
         .weather-item .label {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 5px;
+            font-size: 0.95em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .weather-item .value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #333;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .temperature {
             font-size: 3em !important;
-            color: #667eea;
+            font-weight: 800 !important;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .outfit-section h2 {
             text-align: center;
-            color: #333;
+            color: white;
+            margin-bottom: 35px;
+            font-size: 2em;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .time-period-section {
+            margin-bottom: 45px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .time-period-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .time-period-header {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: white;
             margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .outfit-grid {
@@ -175,53 +369,71 @@
         }
 
         .outfit-card {
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
         }
 
         .outfit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .outfit-image {
             width: 100%;
-            height: 300px;
+            height: 320px;
             object-fit: cover;
-            background: #f0f0f0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            transition: transform 0.4s;
+        }
+
+        .outfit-card:hover .outfit-image {
+            transform: scale(1.05);
         }
 
         .outfit-info {
-            padding: 15px;
+            padding: 20px;
             text-align: center;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .outfit-info h3 {
-            color: #333;
-            margin-bottom: 5px;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .outfit-info p {
-            color: #666;
-            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95em;
+            line-height: 1.5;
         }
 
         .loading {
             text-align: center;
             padding: 40px;
-            color: #666;
+            color: white;
+            font-size: 1.2em;
+            font-weight: 500;
         }
 
         .error {
             text-align: center;
             padding: 20px;
-            background: #ffe0e0;
-            color: #d00;
-            border-radius: 10px;
+            background: rgba(255, 77, 77, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border-radius: 15px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 77, 77, 0.4);
+            font-weight: 500;
         }
 
         .hidden {
@@ -283,9 +495,11 @@
 
         .detail-modal-image {
             width: 100%;
-            height: 400px;
-            object-fit: cover;
+            max-height: 500px;
+            height: auto;
+            object-fit: contain;
             border-radius: 20px 20px 0 0;
+            background: #f5f5f7;
         }
 
         .detail-modal-body {
@@ -426,33 +640,63 @@
         .rating-badge {
             display: inline-flex;
             align-items: center;
-            gap: 3px;
-            background: rgba(255, 215, 0, 0.2);
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            margin-top: 5px;
+            gap: 5px;
+            background: rgba(255, 215, 0, 0.25);
+            backdrop-filter: blur(5px);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-weight: 600;
         }
 
         .rating-badge .star-icon {
             color: #ffd700;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
             .header h1 {
-                font-size: 1.8em;
+                font-size: 2.5em;
+            }
+
+            .header p {
+                font-size: 1.1em;
             }
 
             .card {
                 padding: 20px;
             }
 
+            .location-input {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            input[type="text"], select, button {
+                width: 100%;
+            }
+
             .weather-details {
                 gap: 15px;
             }
 
+            .time-slots {
+                grid-template-columns: 1fr;
+            }
+
+            .outfit-grid {
+                grid-template-columns: 1fr;
+            }
+
             .detail-modal-content {
                 max-height: 95vh;
+                margin: 10px;
             }
 
             .detail-modal-image {
@@ -462,8 +706,33 @@
             .detail-modal-body {
                 padding: 20px;
             }
+
+            .time-period-header {
+                font-size: 1.2em;
+                padding: 12px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .outfit-info h3 {
+                font-size: 1em;
+            }
+
+            .outfit-image {
+                height: 250px;
+            }
         }
     </style>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -490,6 +759,22 @@
                     <button onclick="getWeather()">날씨 확인</button>
                     <button onclick="getCurrentLocation()">내 위치</button>
                 </div>
+
+                <!-- 사용자 선호도 설정 -->
+                <div class="preference-section">
+                    <div class="preference-label">🌡️ 옷차림 선호도</div>
+                    <div class="preference-toggle">
+                        <button class="preference-btn" id="coolerBtn" onclick="setPreference('cooler')">
+                            더 시원하게 ❄️
+                        </button>
+                        <button class="preference-btn active" id="normalBtn" onclick="setPreference('normal')">
+                            보통 👍
+                        </button>
+                        <button class="preference-btn" id="warmerBtn" onclick="setPreference('warmer')">
+                            더 따뜻하게 🔥
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div id="error" class="error hidden"></div>
@@ -497,27 +782,18 @@
 
             <div id="weatherInfo" class="weather-info hidden">
                 <h2 id="cityName">-</h2>
-                <div class="weather-details">
-                    <div class="weather-item">
-                        <div class="label">온도</div>
-                        <div class="value temperature" id="temperature">-</div>
-                    </div>
-                    <div class="weather-item">
-                        <div class="label">날씨</div>
-                        <div class="value" id="weatherDesc">-</div>
-                    </div>
-                    <div class="weather-item">
-                        <div class="label">체감온도</div>
-                        <div class="value" id="feelsLike">-</div>
-                    </div>
+                <div class="time-slots" id="timeSlots">
+                    <!-- 시간대별 날씨가 여기 표시됩니다 -->
                 </div>
             </div>
         </div>
 
         <div id="outfitSection" class="card hidden">
             <div class="outfit-section">
-                <h2>🎨 추천 착샷</h2>
-                <div id="outfitGrid" class="outfit-grid"></div>
+                <h2>🎨 시간대별 추천 착샷</h2>
+                <div id="outfitContainer">
+                    <!-- 시간대별 착샷이 여기 표시됩니다 -->
+                </div>
             </div>
         </div>
     </div>
@@ -570,86 +846,126 @@
         // 현재 선택된 착샷
         let currentOutfit = null;
 
-        // 주우재 착샷 데이터베이스 (샘플)
+        // 사용자 선호도 (기본값: normal)
+        let userPreference = localStorage.getItem('clothingPreference') || 'normal';
+
+        // 선호도 설정 함수
+        function setPreference(preference) {
+            userPreference = preference;
+            localStorage.setItem('clothingPreference', preference);
+
+            // 버튼 활성화 상태 업데이트
+            document.querySelectorAll('.preference-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (preference === 'cooler') {
+                document.getElementById('coolerBtn').classList.add('active');
+            } else if (preference === 'warmer') {
+                document.getElementById('warmerBtn').classList.add('active');
+            } else {
+                document.getElementById('normalBtn').classList.add('active');
+            }
+
+            // 이미 날씨 정보가 표시되어 있다면 다시 로드
+            if (!document.getElementById('weatherInfo').classList.contains('hidden')) {
+                getWeather();
+            }
+        }
+
+        // 페이지 로드 시 저장된 선호도 적용
+        function loadUserPreference() {
+            setPreference(userPreference);
+        }
+
+        // 주우재 착샷 데이터베이스 (샘플) - 세분화된 온도 기준
         const outfitDatabase = {
-            hot: [ // 25도 이상
+            veryhot: [ // 28도 이상
+                {
+                    title: '서머 린넨 룩',
+                    description: '린넨 셔츠 + 숏팬츠',
+                    image: 'https://via.placeholder.com/300x400/FFF8DC/000000?text=%EC%84%9C%EB%A8%B8+%EB%A6%B0%EB%84%A8',
+                    temp: '28°C+'
+                }
+            ],
+            hot: [ // 23-28도
                 {
                     title: '여름 화이트 셔츠 룩',
                     description: '시원한 화이트 셔츠 + 베이지 팬츠',
                     image: 'https://via.placeholder.com/300x400/FFE4B5/000000?text=%EC%97%AC%EB%A6%84+%ED%99%94%EC%9D%B4%ED%8A%B8+%EB%A3%A9',
-                    temp: '25-30°C'
+                    temp: '23-28°C'
                 },
                 {
                     title: '캐주얼 티셔츠 룩',
                     description: '블랙 티셔츠 + 데님 팬츠',
                     image: 'https://via.placeholder.com/300x400/87CEEB/000000?text=%EC%BA%90%EC%A5%AC%EC%96%BC+%ED%8B%B0%EC%85%94%EC%B8%A0',
-                    temp: '25-30°C'
-                },
-                {
-                    title: '서머 린넨 룩',
-                    description: '린넨 셔츠 + 숏팬츠',
-                    image: 'https://via.placeholder.com/300x400/FFF8DC/000000?text=%EC%84%9C%EB%A8%B8+%EB%A6%B0%EB%84%A8',
-                    temp: '28-35°C'
+                    temp: '23-28°C'
                 }
             ],
-            warm: [ // 15-25도
+            warm: [ // 20-23도
                 {
                     title: '봄 가디건 룩',
                     description: '가디건 + 화이트티 + 슬랙스',
                     image: 'https://via.placeholder.com/300x400/FFB6C1/000000?text=%EB%B4%84+%EA%B0%80%EB%94%94%EA%B1%B4',
-                    temp: '15-22°C'
-                },
+                    temp: '20-23°C'
+                }
+            ],
+            mild: [ // 17-20도
                 {
                     title: '셔츠 레이어드 룩',
                     description: '체크 셔츠 + 청바지',
                     image: 'https://via.placeholder.com/300x400/DDA0DD/000000?text=%EC%85%94%EC%B8%A0+%EB%A0%88%EC%9D%B4%EC%96%B4%EB%93%9C',
-                    temp: '18-24°C'
+                    temp: '17-20°C'
                 },
                 {
                     title: '니트 캐주얼 룩',
                     description: '얇은 니트 + 치노팬츠',
                     image: 'https://via.placeholder.com/300x400/F0E68C/000000?text=%EB%8B%88%ED%8A%B8+%EC%BA%90%EC%A5%AC%EC%96%BC',
-                    temp: '15-20°C'
+                    temp: '17-20°C'
                 }
             ],
-            cool: [ // 5-15도
+            cool: [ // 12-17도
                 {
                     title: '트렌치 코트 룩',
                     description: '트렌치 코트 + 니트 + 슬랙스',
                     image: 'https://via.placeholder.com/300x400/D2B48C/000000?text=%ED%8A%B8%EB%A0%8C%EC%B9%98+%EC%BD%94%ED%8A%B8',
-                    temp: '10-15°C'
+                    temp: '12-17°C'
                 },
                 {
                     title: '자켓 레이어드 룩',
                     description: '재킷 + 후드티 + 청바지',
                     image: 'https://via.placeholder.com/300x400/BC8F8F/000000?text=%EC%9E%90%EC%BC%93+%EB%A0%88%EC%9D%B4%EC%96%B4%EB%93%9C',
-                    temp: '8-14°C'
-                },
+                    temp: '12-17°C'
+                }
+            ],
+            cold: [ // 7-12도
                 {
                     title: '가을 울 코트 룩',
                     description: '울 코트 + 터틀넥',
                     image: 'https://via.placeholder.com/300x400/A0522D/000000?text=%EA%B0%80%EC%9D%84+%EC%9A%B8+%EC%BD%94%ED%8A%B8',
-                    temp: '5-12°C'
+                    temp: '7-12°C'
                 }
             ],
-            cold: [ // 5도 이하
-                {
-                    title: '겨울 롱패딩 룩',
-                    description: '롱패딩 + 목도리 + 기모 팬츠',
-                    image: 'https://via.placeholder.com/300x400/4682B4/FFFFFF?text=%EA%B2%A8%EC%9A%B8+%EB%A1%B1%ED%8C%A8%EB%94%A9',
-                    temp: '-5-5°C'
-                },
+            verycold: [ // 3-7도
                 {
                     title: '숏패딩 캐주얼 룩',
                     description: '숏패딩 + 후드 + 청바지',
                     image: 'https://via.placeholder.com/300x400/2F4F4F/FFFFFF?text=%EC%88%8F%ED%8C%A8%EB%94%A9+%EC%BA%90%EC%A5%AC%EC%96%BC',
-                    temp: '0-8°C'
+                    temp: '3-7°C'
                 },
                 {
                     title: '겨울 코트 포멀 룩',
                     description: '울 코트 + 니트 + 슬랙스',
                     image: 'https://via.placeholder.com/300x400/191970/FFFFFF?text=%EA%B2%A8%EC%9A%B8+%EC%BD%94%ED%8A%B8',
-                    temp: '-10-5°C'
+                    temp: '3-7°C'
+                }
+            ],
+            freezing: [ // 3도 이하
+                {
+                    title: '겨울 롱패딩 룩',
+                    description: '롱패딩 + 목도리 + 기모 팬츠',
+                    image: 'https://via.placeholder.com/300x400/4682B4/FFFFFF?text=%EA%B2%A8%EC%9A%B8+%EB%A1%B1%ED%8C%A8%EB%94%A9',
+                    temp: '3°C 이하'
                 }
             ],
             rainy: [ // 비오는 날
@@ -668,90 +984,13 @@
             ]
         };
 
-        // IndexedDB 초기화 및 데이터 가져오기
-        let db;
-
-        async function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('OutfitDB', 1);
-
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-
-                request.onupgradeneeded = (event) => {
-                    db = event.target.result;
-                    if (!db.objectStoreNames.contains('outfits')) {
-                        const objectStore = db.createObjectStore('outfits', { keyPath: 'id' });
-                        objectStore.createIndex('category', 'category', { unique: false });
-                    }
-                };
-            });
-        }
-
-        async function getAllOutfitsFromDB() {
-            if (!db) await initDB();
-
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['outfits'], 'readonly');
-                const objectStore = transaction.objectStore('outfits');
-                const request = objectStore.getAll();
-
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        // IndexedDB에 착샷 저장
-        async function saveOutfitToDB(outfit) {
-            if (!db) await initDB();
-
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['outfits'], 'readwrite');
-                const objectStore = transaction.objectStore('outfits');
-                const request = objectStore.add(outfit);
-
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        // 기본 데이터 로드 (처음 접속 시 자동으로 outfits.json 로드)
-        async function loadInitialDataIfNeeded() {
-            try {
-                const allOutfits = await getAllOutfitsFromDB();
-
-                if (!allOutfits || allOutfits.length === 0) {
-                    console.log('기본 착샷 데이터 로드 중...');
-
-                    const response = await fetch('outfits.json');
-                    const outfits = await response.json();
-
-                    // IndexedDB에 저장
-                    for (const outfit of outfits) {
-                        try {
-                            await saveOutfitToDB(outfit);
-                        } catch (error) {
-                            console.error('착샷 저장 오류:', error);
-                        }
-                    }
-
-                    console.log(`✅ ${outfits.length}개의 기본 착샷 데이터 로드 완료!`);
-                }
-            } catch (error) {
-                console.error('기본 데이터 로드 실패:', error);
-            }
-        }
-
-        // IndexedDB에서 착샷 데이터 가져오기
+        // Firebase에서 착샷 데이터 가져오기
         async function getOutfitsFromStorage() {
             try {
-                const allOutfits = await getAllOutfitsFromDB();
+                const allOutfits = await getAllOutfitsFromFirestore();
 
                 if (allOutfits && allOutfits.length > 0) {
-                    // IndexedDB 데이터를 카테고리별로 그룹화
+                    // Firestore 데이터를 카테고리별로 그룹화
                     const grouped = {};
                     allOutfits.forEach(outfit => {
                         if (!grouped[outfit.category]) {
@@ -762,14 +1001,14 @@
                     return grouped;
                 }
             } catch (e) {
-                console.error('IndexedDB 읽기 오류:', e);
+                console.error('Firestore 읽기 오류:', e);
             }
 
-            // 없으면 기본 샘플 데이터 반환
+            // 데이터가 없으면 빈 객체 반환
             return outfitDatabase;
         }
 
-        // 날씨에 따른 착샷 매칭 함수
+        // 날씨에 따른 착샷 매칭 함수 (세분화된 8단계)
         async function getOutfitsByWeather(temp, weatherMain) {
             const database = await getOutfitsFromStorage();
 
@@ -778,15 +1017,41 @@
                 return database.rainy || [];
             }
 
-            // 온도별 매칭
-            if (temp >= 25) {
-                return database.hot || [];
-            } else if (temp >= 15) {
-                return database.warm || [];
-            } else if (temp >= 5) {
-                return database.cool || [];
+            // 사용자 선호도에 따라 온도 조정
+            let adjustedTemp = temp;
+            if (userPreference === 'cooler') {
+                // 더 시원하게 입고 싶으면 온도를 +3도로 조정 (더 더운 것처럼)
+                adjustedTemp = temp + 3;
+            } else if (userPreference === 'warmer') {
+                // 더 따뜻하게 입고 싶으면 온도를 -3도로 조정 (더 추운 것처럼)
+                adjustedTemp = temp - 3;
+            }
+
+            // 세분화된 온도별 매칭 (8단계)
+            if (adjustedTemp >= 28) {
+                // 28도 이상: 매우 더운 여름 (반팔, 반바지, 린넨)
+                return database.veryhot || database.hot || [];
+            } else if (adjustedTemp >= 23) {
+                // 23-28도: 더운 날씨 (반팔, 얇은 셔츠)
+                return database.hot || database.veryhot || [];
+            } else if (adjustedTemp >= 20) {
+                // 20-23도: 따뜻한 날씨 (긴팔 티셔츠, 얇은 가디건)
+                return database.warm || database.hot || [];
+            } else if (adjustedTemp >= 17) {
+                // 17-20도: 선선한 날씨 (가디건, 얇은 재킷)
+                return database.mild || database.warm || [];
+            } else if (adjustedTemp >= 12) {
+                // 12-17도: 쌀쌀한 날씨 (재킷, 니트)
+                return database.cool || database.mild || [];
+            } else if (adjustedTemp >= 7) {
+                // 7-12도: 추운 날씨 (코트, 두꺼운 재킷)
+                return database.cold || database.cool || [];
+            } else if (adjustedTemp >= 3) {
+                // 3-7도: 매우 추운 날씨 (패딩, 두꺼운 코트)
+                return database.verycold || database.cold || [];
             } else {
-                return database.cold || [];
+                // 3도 이하: 한파 (롱패딩, 목도리, 기모)
+                return database.freezing || database.verycold || [];
             }
         }
 
@@ -828,8 +1093,8 @@
             try {
                 const coords = await getCityCoordinates(city);
 
-                // Open-Meteo API 호출
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia/Seoul`;
+                // Open-Meteo API 호출 (시간별 예보)
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=temperature_2m,apparent_temperature,weather_code&timezone=Asia/Seoul&forecast_days=1`;
                 const response = await fetch(url);
 
                 if (!response.ok) {
@@ -838,25 +1103,54 @@
 
                 const data = await response.json();
 
-                // OpenWeatherMap 형식으로 변환
-                const weatherData = {
-                    name: coords.name,
-                    main: {
-                        temp: data.current.temperature_2m,
-                        feels_like: data.current.apparent_temperature
-                    },
-                    weather: [{
-                        main: getWeatherType(data.current.weather_code),
-                        description: getWeatherDescription(data.current.weather_code)
-                    }]
-                };
+                // 오늘 날짜의 특정 시간(7시, 13시, 19시) 데이터 추출
+                const timeSlots = extractTimeSlots(data.hourly, coords.name);
 
-                displayWeather(weatherData);
+                displayWeatherTimeSlots(timeSlots);
             } catch (error) {
                 showError(error.message);
             } finally {
                 showLoading(false);
             }
+        }
+
+        // 시간대별 날씨 데이터 추출
+        function extractTimeSlots(hourlyData, cityName) {
+            const now = new Date();
+            const targetHours = [7, 13, 19]; // 오전 7시, 오후 1시, 오후 7시
+            const slots = [];
+
+            targetHours.forEach(targetHour => {
+                // 오늘 날짜의 해당 시간 인덱스 찾기
+                const targetTime = new Date(now);
+                targetTime.setHours(targetHour, 0, 0, 0);
+
+                // hourlyData.time에서 해당 시간 찾기
+                const timeIndex = hourlyData.time.findIndex(time => {
+                    const date = new Date(time);
+                    return date.getHours() === targetHour &&
+                           date.getDate() === now.getDate();
+                });
+
+                if (timeIndex !== -1) {
+                    const temp = hourlyData.temperature_2m[timeIndex];
+                    const feelsLike = hourlyData.apparent_temperature[timeIndex];
+                    const weatherCode = hourlyData.weather_code[timeIndex];
+
+                    slots.push({
+                        hour: targetHour,
+                        label: targetHour === 7 ? '오전 7시 ☀️' :
+                               targetHour === 13 ? '오후 1시 🌤️' : '오후 7시 🌙',
+                        cityName: cityName,
+                        temp: temp,
+                        feelsLike: feelsLike,
+                        weatherMain: getWeatherType(weatherCode),
+                        weatherDesc: getWeatherDescription(weatherCode)
+                    });
+                }
+            });
+
+            return slots;
         }
 
         // WMO 날씨 코드를 날씨 타입으로 변환
@@ -899,6 +1193,30 @@
             return descriptions[code] || '알 수 없음';
         }
 
+        // 날씨에 따른 배경 업데이트
+        function updateBackground(weatherMain) {
+            const body = document.body;
+            const now = new Date();
+            const hour = now.getHours();
+            const isNight = hour < 6 || hour >= 19;
+
+            // 기존 클래스 모두 제거
+            body.className = '';
+
+            // 날씨와 시간에 따라 배경 설정
+            if (weatherMain === 'Clear') {
+                body.classList.add(isNight ? 'weather-clear-night' : 'weather-clear-day');
+            } else if (weatherMain === 'Clouds') {
+                body.classList.add(isNight ? 'weather-clouds-night' : 'weather-clouds-day');
+            } else if (weatherMain === 'Rain' || weatherMain === 'Thunderstorm') {
+                body.classList.add('weather-rain');
+            } else if (weatherMain === 'Snow') {
+                body.classList.add('weather-snow');
+            } else {
+                body.classList.add('weather-default');
+            }
+        }
+
         // 현재 위치 날씨 가져오기
         function getCurrentLocation() {
             if (!navigator.geolocation) {
@@ -914,8 +1232,8 @@
                     try {
                         const { latitude, longitude } = position.coords;
 
-                        // Open-Meteo API 호출
-                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,apparent_temperature,weather_code&timezone=Asia/Seoul`;
+                        // Open-Meteo API 호출 (시간별 예보)
+                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,apparent_temperature,weather_code&timezone=Asia/Seoul&forecast_days=1`;
                         const response = await fetch(url);
 
                         if (!response.ok) {
@@ -924,20 +1242,10 @@
 
                         const data = await response.json();
 
-                        // OpenWeatherMap 형식으로 변환
-                        const weatherData = {
-                            name: '현재 위치',
-                            main: {
-                                temp: data.current.temperature_2m,
-                                feels_like: data.current.apparent_temperature
-                            },
-                            weather: [{
-                                main: getWeatherType(data.current.weather_code),
-                                description: getWeatherDescription(data.current.weather_code)
-                            }]
-                        };
+                        // 오늘 날짜의 특정 시간(7시, 13시, 19시) 데이터 추출
+                        const timeSlots = extractTimeSlots(data.hourly, '현재 위치');
 
-                        displayWeather(weatherData);
+                        displayWeatherTimeSlots(timeSlots);
                     } catch (error) {
                         showError(error.message);
                     } finally {
@@ -951,64 +1259,133 @@
             );
         }
 
-        // 날씨 정보 표시
-        function displayWeather(data) {
-            document.getElementById('cityName').textContent = data.name;
-            document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
-            document.getElementById('weatherDesc').textContent = data.weather[0].description;
-            document.getElementById('feelsLike').textContent = `${Math.round(data.main.feels_like)}°C`;
+        // 시간대별 날씨 정보 표시
+        function displayWeatherTimeSlots(timeSlots) {
+            const cityName = timeSlots.length > 0 ? timeSlots[0].cityName : '-';
+            document.getElementById('cityName').textContent = cityName;
+
+            // 현재 시간대의 날씨로 배경 업데이트
+            if (timeSlots.length > 0) {
+                const currentHour = new Date().getHours();
+                let currentSlot = timeSlots[0];
+
+                // 현재 시간과 가장 가까운 시간대 찾기
+                for (const slot of timeSlots) {
+                    if (Math.abs(slot.hour - currentHour) < Math.abs(currentSlot.hour - currentHour)) {
+                        currentSlot = slot;
+                    }
+                }
+
+                updateBackground(currentSlot.weatherMain);
+            }
+
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            timeSlotsContainer.innerHTML = '';
+
+            timeSlots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                slotDiv.innerHTML = `
+                    <div class="time-slot-header">${slot.label}</div>
+                    <div class="weather-item">
+                        <div class="label">온도</div>
+                        <div class="value temperature">${Math.round(slot.temp)}°C</div>
+                    </div>
+                    <div class="weather-item" style="margin-top: 10px;">
+                        <div class="label">날씨</div>
+                        <div class="value" style="font-size: 1.1em;">${slot.weatherDesc}</div>
+                    </div>
+                    <div class="weather-item" style="margin-top: 10px;">
+                        <div class="label">체감온도</div>
+                        <div class="value" style="font-size: 1.1em;">${Math.round(slot.feelsLike)}°C</div>
+                    </div>
+                `;
+                timeSlotsContainer.appendChild(slotDiv);
+            });
 
             document.getElementById('weatherInfo').classList.remove('hidden');
 
-            // 착샷 추천
-            displayOutfits(data.main.temp, data.weather[0].main);
+            // 시간대별 착샷 추천
+            displayOutfitsForTimeSlots(timeSlots);
         }
 
-        // 착샷 표시
-        async function displayOutfits(temp, weatherMain) {
-            const outfits = await getOutfitsByWeather(temp, weatherMain);
-            const grid = document.getElementById('outfitGrid');
+        // 배열 섞기 함수 (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
 
-            grid.innerHTML = '';
+        // 시간대별 착샷 표시
+        async function displayOutfitsForTimeSlots(timeSlots) {
+            const container = document.getElementById('outfitContainer');
+            container.innerHTML = '';
 
-            if (outfits.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
-                        <p>이 날씨에 맞는 착샷이 아직 없습니다.</p>
-                        <p><a href="admin.html" style="color: #667eea;">관리자 페이지</a>에서 추가해주세요.</p>
-                    </div>
-                `;
-            } else {
-                outfits.forEach(outfit => {
-                    const card = document.createElement('div');
-                    card.className = 'outfit-card';
+            for (const slot of timeSlots) {
+                const outfits = await getOutfitsByWeather(slot.temp, slot.weatherMain);
 
-                    // 평점 배지 HTML
-                    const ratingBadge = outfit.rating && outfit.rating > 0
-                        ? `<div class="rating-badge"><span class="star-icon">★</span> ${outfit.rating}/5</div>`
-                        : '';
+                // 시간대별 섹션 생성
+                const section = document.createElement('div');
+                section.className = 'time-period-section';
 
-                    // 착용 횟수 표시
-                    const wearCount = outfit.wearHistory && outfit.wearHistory.length > 0
-                        ? `<p style="font-size: 0.85em; color: #999; margin-top: 5px;">👔 ${outfit.wearHistory.length}회 착용</p>`
-                        : '';
+                const header = document.createElement('div');
+                header.className = 'time-period-header';
+                header.textContent = `${slot.label} (${Math.round(slot.temp)}°C, ${slot.weatherDesc})`;
+                section.appendChild(header);
 
-                    card.innerHTML = `
-                        <img src="${outfit.image}" alt="${outfit.title}" class="outfit-image">
-                        <div class="outfit-info">
-                            <h3>${outfit.title}</h3>
-                            <p>${outfit.description}</p>
-                            <p><strong>${outfit.temp}</strong></p>
-                            ${ratingBadge}
-                            ${wearCount}
+                // 착샷 그리드 생성
+                const grid = document.createElement('div');
+                grid.className = 'outfit-grid';
+
+                if (outfits.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
+                            <p>이 날씨에 맞는 착샷이 아직 없습니다.</p>
+                            <p><a href="admin.html" style="color: #667eea;">관리자 페이지</a>에서 추가해주세요.</p>
                         </div>
                     `;
+                } else {
+                    // 각 시간대마다 다른 착샷을 보여주기 위해 섞기
+                    const shuffledOutfits = shuffleArray(outfits);
 
-                    // 카드 클릭 시 모달 열기
-                    card.addEventListener('click', () => openDetailModal(outfit));
+                    // 각 시간대별로 최대 3개 착샷만 표시
+                    shuffledOutfits.slice(0, 3).forEach(outfit => {
+                        const card = document.createElement('div');
+                        card.className = 'outfit-card';
 
-                    grid.appendChild(card);
-                });
+                        // 평점 배지 HTML
+                        const ratingBadge = outfit.rating && outfit.rating > 0
+                            ? `<div class="rating-badge"><span class="star-icon">★</span> ${outfit.rating}/5</div>`
+                            : '';
+
+                        // 착용 횟수 표시
+                        const wearCount = outfit.wearHistory && outfit.wearHistory.length > 0
+                            ? `<p style="font-size: 0.85em; color: #999; margin-top: 5px;">👔 ${outfit.wearHistory.length}회 착용</p>`
+                            : '';
+
+                        card.innerHTML = `
+                            <img src="${outfit.image}" alt="${outfit.title}" class="outfit-image">
+                            <div class="outfit-info">
+                                <h3>${outfit.title}</h3>
+                                <p>${outfit.description}</p>
+                                <p><strong>${outfit.temp}</strong></p>
+                                ${ratingBadge}
+                                ${wearCount}
+                            </div>
+                        `;
+
+                        // 카드 클릭 시 모달 열기
+                        card.addEventListener('click', () => openDetailModal(outfit));
+
+                        grid.appendChild(card);
+                    });
+                }
+
+                section.appendChild(grid);
+                container.appendChild(section);
             }
 
             document.getElementById('outfitSection').classList.remove('hidden');
@@ -1036,28 +1413,14 @@
             }
         });
 
-        // IndexedDB에서 착샷 업데이트
+        // Firebase 착샷 업데이트 (별점, 착용 기록 등)
         async function updateOutfitInDB(outfit) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['outfits'], 'readwrite');
-                const objectStore = transaction.objectStore('outfits');
-                const request = objectStore.put(outfit);
-
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            return await updateOutfitInFirestore(outfit);
         }
 
-        // IndexedDB에서 특정 착샷 가져오기
+        // Firebase에서 특정 착샷 가져오기
         async function getOutfitFromDB(id) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction(['outfits'], 'readonly');
-                const objectStore = transaction.objectStore('outfits');
-                const request = objectStore.get(id);
-
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            return await getOutfitFromFirestore(id);
         }
 
         // 상세 모달 열기
@@ -1235,8 +1598,7 @@
 
         // 페이지 로드 시 초기화 및 기본 날씨 표시
         window.addEventListener('load', async () => {
-            await initDB();
-            await loadInitialDataIfNeeded();  // 기본 데이터 자동 로드
+            loadUserPreference();  // 사용자 선호도 로드
             getWeather();
         });
 

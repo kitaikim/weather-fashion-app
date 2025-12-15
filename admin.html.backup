@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
 
     <style>
         * {
@@ -630,10 +629,92 @@
     </div>
 
     <script>
-        // Firebase는 firebase-config.js에서 초기화됨
+        // Firebase 초기화
+        const firebaseConfig = {
+            apiKey: "AIzaSyANAUreEuxKtMKp_yb1K8ND_6_l9oLxiAw",
+            authDomain: "kitai-af460.firebaseapp.com",
+            projectId: "kitai-af460",
+            storageBucket: "kitai-af460.firebasestorage.app",
+            messagingSenderId: "61066880154",
+            appId: "1:61066880154:web:c21301494f7044b2572b23"
+        };
+
+        // Firebase 앱 초기화
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
         let currentImageData = null;
         let currentModalIndex = 0;
         let filteredOutfits = [];
+
+        // Firestore 함수들 (IndexedDB 대체)
+
+        // 착샷 저장 (Firestore)
+        async function saveOutfitToDB(outfit) {
+            try {
+                await db.collection('outfits').doc(outfit.id.toString()).set(outfit);
+                return outfit.id;
+            } catch (error) {
+                console.error('Firestore 저장 오류:', error);
+                throw error;
+            }
+        }
+
+        // IndexedDB에 착샷 저장
+        function saveOutfitToDB(outfit) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readwrite');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.add(outfit);
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // IndexedDB에서 모든 착샷 가져오기
+        function getAllOutfitsFromDB() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readonly');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.getAll();
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // IndexedDB에서 착샷 삭제
+        function deleteOutfitFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readwrite');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.delete(id);
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // localStorage에서 IndexedDB로 데이터 마이그레이션
+        async function migrateFromLocalStorage() {
+            const localData = localStorage.getItem('outfits');
+            if (localData) {
+                try {
+                    const outfits = JSON.parse(localData);
+                    for (const category in outfits) {
+                        for (const outfit of outfits[category]) {
+                            await saveOutfitToDB(outfit);
+                        }
+                    }
+                    localStorage.removeItem('outfits');
+                    console.log('데이터 마이그레이션 완료');
+                } catch (error) {
+                    console.error('마이그레이션 에러:', error);
+                }
+            }
+        }
 
         // 파일 선택 처리
         function handleFileSelect(event) {
@@ -692,23 +773,17 @@
                 return;
             }
 
-            const outfitId = Date.now();
+            const outfit = {
+                id: Date.now(),
+                category,
+                title,
+                description,
+                temp,
+                image: currentImageData
+            };
 
             try {
-                // Firebase Storage에 이미지 업로드
-                const imageUrl = await uploadImageToStorage(currentImageData, outfitId);
-
-                const outfit = {
-                    id: outfitId,
-                    category,
-                    title,
-                    description,
-                    temp,
-                    image: imageUrl
-                };
-
-                // Firestore에 착샷 저장
-                await saveOutfitToFirestore(outfit);
+                await saveOutfitToDB(outfit);
 
                 // 성공 메시지 표시
                 showSuccessMessage();
@@ -731,12 +806,7 @@
             }
 
             try {
-                // Firebase Storage에서 이미지 삭제
-                await deleteImageFromStorage(id);
-
-                // Firestore에서 착샷 삭제
-                await deleteOutfitFromFirestore(id);
-
+                await deleteOutfitFromDB(id);
                 await loadOutfits();
             } catch (error) {
                 console.error('삭제 에러:', error);
@@ -855,7 +925,7 @@
 
         // 필터링 및 정렬
         async function filterOutfits() {
-            const allOutfits = await getAllOutfitsFromFirestore();
+            const allOutfits = await getAllOutfitsFromDB();
             const filterCategory = document.getElementById('filterCategory').value;
             const sortOrder = document.getElementById('sortOrder').value;
 
@@ -935,7 +1005,7 @@
         // 데이터 내보내기
         async function exportData() {
             try {
-                const allOutfits = await getAllOutfitsFromFirestore();
+                const allOutfits = await getAllOutfitsFromDB();
 
                 if (allOutfits.length === 0) {
                     alert('내보낼 데이터가 없습니다.');
@@ -986,19 +1056,13 @@
 
                 if (!confirm) return;
 
-                // Firestore에 저장
+                // IndexedDB에 저장
                 let successCount = 0;
                 for (const outfit of data) {
                     try {
                         // ID가 중복되면 새 ID 생성
                         outfit.id = Date.now() + successCount;
-
-                        // 이미지 업로드 (Base64인 경우만)
-                        if (outfit.image && outfit.image.startsWith('data:image')) {
-                            outfit.image = await uploadImageToStorage(outfit.image, outfit.id);
-                        }
-
-                        await saveOutfitToFirestore(outfit);
+                        await saveOutfitToDB(outfit);
                         successCount++;
                     } catch (error) {
                         console.error('착샷 저장 오류:', error);
@@ -1025,8 +1089,8 @@
         // 수정 모달 열기
         async function openEditModal(outfitId) {
             try {
-                // Firestore에서 착샷 가져오기
-                const outfit = await getOutfitFromFirestore(outfitId);
+                // IndexedDB에서 착샷 가져오기
+                const outfit = await getOutfitFromDB(outfitId);
 
                 if (!outfit) {
                     alert('착샷을 찾을 수 없습니다.');
@@ -1083,6 +1147,30 @@
             reader.readAsDataURL(file);
         }
 
+        // IndexedDB에서 특정 착샷 가져오기
+        async function getOutfitFromDB(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readonly');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.get(id);
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // IndexedDB에 착샷 업데이트
+        async function updateOutfitInDB(outfit) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['outfits'], 'readwrite');
+                const objectStore = transaction.objectStore('outfits');
+                const request = objectStore.put(outfit);
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
         // 수정된 착샷 저장
         async function saveEditedOutfit() {
             if (!currentEditOutfit) {
@@ -1101,13 +1189,6 @@
             }
 
             try {
-                let imageUrl = currentEditOutfit.image;
-
-                // 새 이미지가 있으면 업로드
-                if (newEditImageData) {
-                    imageUrl = await uploadImageToStorage(newEditImageData, currentEditOutfit.id);
-                }
-
                 // 수정된 데이터로 객체 업데이트
                 const updatedOutfit = {
                     ...currentEditOutfit,
@@ -1115,14 +1196,15 @@
                     title,
                     description,
                     temp,
-                    image: imageUrl
+                    // 새 이미지가 있으면 업데이트, 없으면 기존 이미지 유지
+                    image: newEditImageData || currentEditOutfit.image
                 };
 
-                // Firestore에 저장
-                await updateOutfitInFirestore(updatedOutfit);
+                // IndexedDB에 저장
+                await updateOutfitInDB(updatedOutfit);
 
                 // 성공 메시지
-                showSuccessMessage();
+                showMessage('✅ 착샷이 성공적으로 수정되었습니다!');
 
                 // 모달 닫기
                 document.getElementById('editModal').classList.remove('show');
@@ -1141,6 +1223,8 @@
 
         // 페이지 로드 시 초기화
         window.addEventListener('load', async () => {
+            await initDB();
+            await migrateFromLocalStorage();
             await loadOutfits();
         });
     </script>
