@@ -87,19 +87,29 @@ async function deleteOutfitFromFirestore(id) {
 // 이미지 업로드 (Base64 → Firebase Storage)
 async function uploadImageToStorage(imageData, outfitId) {
     try {
-        // Base64 데이터인 경우
+        // Base64 데이터인 경우에만 Storage에 업로드 시도
         if (imageData.startsWith('data:image')) {
+            console.log('📤 Base64 이미지를 Storage에 업로드 시도 중...');
             const storageRef = firebaseStorage.ref(`outfits/${outfitId}.jpg`);
             await storageRef.putString(imageData, 'data_url');
             const downloadURL = await storageRef.getDownloadURL();
-            console.log('✅ 이미지 업로드됨:', downloadURL);
+            console.log('✅ 이미지 업로드 성공:', downloadURL);
             return downloadURL;
         }
-        // 이미 URL인 경우 그대로 반환
+
+        // 이미 URL인 경우 (http:// 또는 https://로 시작)
+        if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+            console.log('🔗 이미지 URL 그대로 사용:', imageData);
+            return imageData;
+        }
+
+        // 그 외의 경우
+        console.warn('⚠️ 알 수 없는 이미지 데이터 형식:', imageData.substring(0, 50));
         return imageData;
     } catch (error) {
-        console.error('❌ 이미지 업로드 오류:', error);
-        // 업로드 실패 시 Base64 그대로 반환
+        console.error('❌ 이미지 Storage 업로드 오류:', error);
+        console.log('⚠️ 업로드 실패, 원본 데이터 사용');
+        // 업로드 실패 시 원본 데이터 그대로 반환 (Base64 또는 URL)
         return imageData;
     }
 }
