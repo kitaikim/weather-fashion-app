@@ -780,19 +780,10 @@
             <div id="error" class="error hidden"></div>
             <div id="loading" class="loading hidden">날씨 정보를 가져오는 중...</div>
 
-            <div id="weatherInfo" class="weather-info hidden">
-                <h2 id="cityName">-</h2>
-                <div class="time-slots" id="timeSlots">
-                    <!-- 시간대별 날씨가 여기 표시됩니다 -->
-                </div>
-            </div>
-        </div>
-
-        <div id="outfitSection" class="card hidden">
-            <div class="outfit-section">
-                <h2>🎨 시간대별 추천 착샷</h2>
-                <div id="outfitContainer">
-                    <!-- 시간대별 착샷이 여기 표시됩니다 -->
+            <div id="weatherOutfitSection" class="card hidden">
+                <h2 id="cityName" style="text-align: center; color: white; margin-bottom: 20px; font-size: 2em;">-</h2>
+                <div id="timeSlotContainer">
+                    <!-- 시간대별 날씨와 착샷이 여기 표시됩니다 -->
                 </div>
             </div>
         </div>
@@ -1259,8 +1250,8 @@
             );
         }
 
-        // 시간대별 날씨 정보 표시
-        function displayWeatherTimeSlots(timeSlots) {
+        // 시간대별 날씨 정보 및 착샷 표시
+        async function displayWeatherTimeSlots(timeSlots) {
             const cityName = timeSlots.length > 0 ? timeSlots[0].cityName : '-';
             document.getElementById('cityName').textContent = cityName;
 
@@ -1279,72 +1270,46 @@
                 updateBackground(currentSlot.weatherMain);
             }
 
-            const timeSlotsContainer = document.getElementById('timeSlots');
-            timeSlotsContainer.innerHTML = '';
+            // 통합된 시간대별 날씨와 착샷 표시
+            await displayCombinedTimeSlots(timeSlots);
 
-            timeSlots.forEach(slot => {
-                const slotDiv = document.createElement('div');
-                slotDiv.className = 'time-slot';
-                slotDiv.innerHTML = `
-                    <div class="time-slot-header">${slot.label}</div>
-                    <div class="weather-item">
-                        <div class="label">온도</div>
-                        <div class="value temperature">${Math.round(slot.temp)}°C</div>
-                    </div>
-                    <div class="weather-item" style="margin-top: 10px;">
-                        <div class="label">날씨</div>
-                        <div class="value" style="font-size: 1.1em;">${slot.weatherDesc}</div>
-                    </div>
-                    <div class="weather-item" style="margin-top: 10px;">
-                        <div class="label">체감온도</div>
-                        <div class="value" style="font-size: 1.1em;">${Math.round(slot.feelsLike)}°C</div>
-                    </div>
-                `;
-                timeSlotsContainer.appendChild(slotDiv);
-            });
-
-            document.getElementById('weatherInfo').classList.remove('hidden');
-
-            // 시간대별 착샷 추천
-            displayOutfitsForTimeSlots(timeSlots);
+            document.getElementById('weatherOutfitSection').classList.remove('hidden');
         }
 
-        // 배열 섞기 함수 (Fisher-Yates shuffle)
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
-        }
-
-        // 시간대별 착샷 표시
-        async function displayOutfitsForTimeSlots(timeSlots) {
-            const container = document.getElementById('outfitContainer');
+        // 시간대별 날씨와 착샷을 통합해서 표시
+        async function displayCombinedTimeSlots(timeSlots) {
+            const container = document.getElementById('timeSlotContainer');
             container.innerHTML = '';
 
             for (const slot of timeSlots) {
-                const outfits = await getOutfitsByWeather(slot.temp, slot.weatherMain);
-
-                // 시간대별 섹션 생성
+                // 각 시간대별 섹션 생성
                 const section = document.createElement('div');
-                section.className = 'time-period-section';
+                section.style.cssText = 'background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px;';
 
+                // 시간대 헤더 (날씨 정보 포함)
                 const header = document.createElement('div');
-                header.className = 'time-period-header';
-                header.textContent = `${slot.label} (${Math.round(slot.temp)}°C, ${slot.weatherDesc})`;
+                header.style.cssText = 'color: white; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.2);';
+                header.innerHTML = `
+                    <h3 style="font-size: 1.8em; margin-bottom: 10px;">${slot.label}</h3>
+                    <div style="display: flex; gap: 30px; flex-wrap: wrap; font-size: 1.1em;">
+                        <div><strong>온도:</strong> ${Math.round(slot.temp)}°C</div>
+                        <div><strong>체감:</strong> ${Math.round(slot.feelsLike)}°C</div>
+                        <div><strong>날씨:</strong> ${slot.weatherDesc}</div>
+                    </div>
+                `;
                 section.appendChild(header);
 
-                // 착샷 그리드 생성
-                const grid = document.createElement('div');
-                grid.className = 'outfit-grid';
+                // 착샷 추천
+                const outfits = await getOutfitsByWeather(slot.temp, slot.weatherMain);
+
+                const outfitGrid = document.createElement('div');
+                outfitGrid.className = 'outfit-grid';
 
                 if (outfits.length === 0) {
-                    grid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
+                    outfitGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: rgba(255, 255, 255, 0.7);">
                             <p>이 날씨에 맞는 착샷이 아직 없습니다.</p>
-                            <p><a href="admin.html" style="color: #667eea;">관리자 페이지</a>에서 추가해주세요.</p>
+                            <p><a href="admin.html" style="color: #a8d5ff;">관리자 페이지</a>에서 추가해주세요.</p>
                         </div>
                     `;
                 } else {
@@ -1380,15 +1345,23 @@
                         // 카드 클릭 시 모달 열기
                         card.addEventListener('click', () => openDetailModal(outfit));
 
-                        grid.appendChild(card);
+                        outfitGrid.appendChild(card);
                     });
                 }
 
-                section.appendChild(grid);
+                section.appendChild(outfitGrid);
                 container.appendChild(section);
             }
+        }
 
-            document.getElementById('outfitSection').classList.remove('hidden');
+        // 배열 섞기 함수 (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
         }
 
         // 유틸리티 함수들
