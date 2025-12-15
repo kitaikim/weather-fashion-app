@@ -695,10 +695,35 @@
             console.log('📝 입력값:', { category, title, description, temp });
             console.log('🖼️ currentImageData:', currentImageData);
 
+            // currentImageData가 없으면 입력 필드를 직접 확인 (브라우저 호환성 보완)
             if (!currentImageData) {
-                console.log('❌ 이미지 데이터 없음');
-                alert('이미지를 선택해주세요.');
-                return;
+                const urlInput = document.getElementById('imageUrl').value.trim();
+                const fileInput = document.getElementById('fileInput').files[0];
+
+                console.log('⚠️ currentImageData가 null, 입력 필드 직접 확인:', { urlInput, fileInput });
+
+                if (urlInput) {
+                    // URL이 입력되어 있으면 사용
+                    console.log('✅ URL 입력 필드에서 이미지 URL 가져옴');
+                    currentImageData = urlInput;
+                    showPreview('urlPreview', urlInput);
+                } else if (fileInput) {
+                    // 파일이 선택되어 있으면 읽기
+                    console.log('✅ 파일 입력에서 이미지 파일 발견, 읽는 중...');
+                    await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            currentImageData = e.target.result;
+                            showPreview('filePreview', currentImageData);
+                            resolve();
+                        };
+                        reader.readAsDataURL(fileInput);
+                    });
+                } else {
+                    console.log('❌ 이미지 데이터 없음 (URL도 없고 파일도 없음)');
+                    alert('이미지를 선택해주세요.');
+                    return;
+                }
             }
 
             if (!title || !description || !temp) {
