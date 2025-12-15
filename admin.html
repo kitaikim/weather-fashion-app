@@ -780,14 +780,11 @@
             }
 
             try {
-                // Firebase Storage에서 이미지 삭제 시도 (실패해도 계속 진행)
-                try {
-                    await deleteImageFromStorage(id);
-                    console.log('✅ Storage 이미지 삭제 완료');
-                } catch (storageError) {
-                    console.warn('⚠️ Storage 이미지 삭제 실패 (무시):', storageError);
-                    // Storage 삭제 실패는 무시하고 계속 진행
-                }
+                console.log('🗑️ 삭제 시작:', id);
+
+                // Storage 삭제는 완전히 건너뜀 (CORS 문제로 인해 타임아웃 발생)
+                // 모든 이미지가 외부 URL이므로 Storage 정리 불필요
+                console.log('⏭️ Storage 삭제 건너뜀 (외부 URL 사용 중)');
 
                 // Firestore에서 착샷 삭제 (필수)
                 await deleteOutfitFromFirestore(id);
