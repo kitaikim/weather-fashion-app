@@ -638,6 +638,8 @@
         // 파일 선택 처리
         function handleFileSelect(event) {
             const file = event.target.files[0];
+            console.log('📁 파일 선택됨:', file?.name);
+
             if (!file) return;
 
             if (!file.type.startsWith('image/')) {
@@ -648,6 +650,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 currentImageData = e.target.result;
+                console.log('✅ 파일 읽기 완료, currentImageData 설정됨 (Base64 길이:', e.target.result.length, ')');
                 showPreview('filePreview', currentImageData);
                 document.getElementById('imageUrl').value = '';
                 document.getElementById('urlPreview').innerHTML = '';
@@ -658,12 +661,17 @@
         // URL 입력 처리
         function handleUrlInput() {
             const url = document.getElementById('imageUrl').value.trim();
+            console.log('🔗 URL 입력됨:', url);
+
             if (!url) {
                 document.getElementById('urlPreview').innerHTML = '';
+                console.log('⚪ URL이 비어있음, currentImageData 초기화');
+                currentImageData = null;
                 return;
             }
 
             currentImageData = url;
+            console.log('✅ currentImageData 설정됨:', currentImageData);
             showPreview('urlPreview', url);
             document.getElementById('fileInput').value = '';
             document.getElementById('filePreview').innerHTML = '';
@@ -677,20 +685,29 @@
 
         // 착샷 저장
         async function saveOutfit() {
+            console.log('🔵 saveOutfit() 함수 호출됨');
+
             const category = document.getElementById('category').value;
             const title = document.getElementById('title').value.trim();
             const description = document.getElementById('description').value.trim();
             const temp = document.getElementById('temp').value.trim();
 
+            console.log('📝 입력값:', { category, title, description, temp });
+            console.log('🖼️ currentImageData:', currentImageData);
+
             if (!currentImageData) {
+                console.log('❌ 이미지 데이터 없음');
                 alert('이미지를 선택해주세요.');
                 return;
             }
 
             if (!title || !description || !temp) {
+                console.log('❌ 필수 필드 누락:', { title: !!title, description: !!description, temp: !!temp });
                 alert('모든 필드를 입력해주세요.');
                 return;
             }
+
+            console.log('✅ 유효성 검사 통과, 저장 시작...');
 
             const outfitId = Date.now();
 
